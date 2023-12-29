@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #99c5f1;
+        }
+
+        .custom-file-input {
+            display: flex;
+        }
+
+        .custom-file-label {
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            padding: 8px 12px;
+            background-color: #ffffff;
+            cursor: pointer;
+        }
+
+        .custom-file-label::after {
+            content: 'Browse';
+        }
+
+        .custom-file-input:focus + .custom-file-label {
+            border-color: #4caf50;
+            box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+        }
+
+        .custom-file-input:disabled + .custom-file-label {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+
+        .custom-file-input:lang(en)~.custom-file-label::after {
+            content: 'Browse';
+        }
+
+        .custom-file-input ~ .custom-file-label[data-browse]:after {
+            content: attr(data-browse);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title text-center">File Upload</h1>
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" name="file" id="fileInput" required>
+                        <label class="custom-file-label" for="fileInput">Choose a file</label>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn btn-primary">Upload File</button>
+                        <button type="button" class="btn btn-danger ml-2" onclick="cancelFile()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            const fileInput = document.getElementById('fileInput');
+            formData.append('file', fileInput.files[0]);
+
+            fetch('http://localhost:3000/api/files/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                alert('File uploaded successfully!');
+            })
+            .catch(error => {
+                console.error(error);
+                alert('Error uploading file.');
+            });
+        });
+
+        function cancelFile() {
+            const fileInput = document.getElementById('fileInput');
+            fileInput.value = ''; // Clear the file input
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
